@@ -23,8 +23,8 @@ class Person extends CI_Controller {
 		foreach ($list as $person) {
 			$no++;
 			$row = array();
-			$row[] = $person->firstName;
-			$row[] = $person->lastName;
+			$row[] = $person->firstname;
+			$row[] = $person->lastname;
 			$row[] = $person->gender;
 			$row[] = $person->address;
 			$row[] = $person->dob;
@@ -49,14 +49,16 @@ class Person extends CI_Controller {
 	public function ajax_edit($id)
 	{
 		$data = $this->person->get_by_id($id);
+		$data->dob = ($data->dob == '0000-00-00') ? '' : $data->dob; // if 0000-00-00 set tu empty for datepicker compatibility
 		echo json_encode($data);
 	}
 
 	public function ajax_add()
 	{
+		$this->_validate();
 		$data = array(
-				'firstName' => $this->input->post('firstName'),
-				'lastName' => $this->input->post('lastName'),
+				'firstname' => $this->input->post('firstname'),
+				'lastname' => $this->input->post('lastname'),
 				'gender' => $this->input->post('gender'),
 				'address' => $this->input->post('address'),
 				'dob' => $this->input->post('dob'),
@@ -67,9 +69,10 @@ class Person extends CI_Controller {
 
 	public function ajax_update()
 	{
+		$this->_validate();
 		$data = array(
-				'firstName' => $this->input->post('firstName'),
-				'lastName' => $this->input->post('lastName'),
+				'firstname' => $this->input->post('firstname'),
+				'lastname' => $this->input->post('lastname'),
 				'gender' => $this->input->post('gender'),
 				'address' => $this->input->post('address'),
 				'dob' => $this->input->post('dob'),
@@ -82,6 +85,56 @@ class Person extends CI_Controller {
 	{
 		$this->person->delete_by_id($id);
 		echo json_encode(array("status" => TRUE));
+	}
+
+
+	private function _validate()
+	{
+		$data = array();
+		$data['error_string'] = array();
+		$data['inputerror'] = array();
+		$data['status'] = TRUE;
+
+		if($this->input->post('firstname') == '')
+		{
+			$data['inputerror'][] = 'firstname';
+			$data['error_string'][] = 'First name is required';
+			$data['status'] = FALSE;
+		}
+
+		if($this->input->post('lastname') == '')
+		{
+			$data['inputerror'][] = 'lastname';
+			$data['error_string'][] = 'Last name is required';
+			$data['status'] = FALSE;
+		}
+
+		if($this->input->post('dob') == '')
+		{
+			$data['inputerror'][] = 'dob';
+			$data['error_string'][] = 'Date of Birth is required';
+			$data['status'] = FALSE;
+		}
+
+		if($this->input->post('gender') == '')
+		{
+			$data['inputerror'][] = 'gender';
+			$data['error_string'][] = 'Please select gender';
+			$data['status'] = FALSE;
+		}
+
+		if($this->input->post('address') == '')
+		{
+			$data['inputerror'][] = 'address';
+			$data['error_string'][] = 'Addess is required';
+			$data['status'] = FALSE;
+		}
+
+		if($data['status'] === FALSE)
+		{
+			echo json_encode($data);
+			exit();
+		}
 	}
 
 }
