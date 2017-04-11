@@ -1,4 +1,4 @@
-create database crud;
+create database_crud;
 use crud;
 -- Table: persons
 
