@@ -576,8 +576,8 @@ class Auth_model extends MY_Model {
 			// Immediately delete orphaned auth sessions
 			$this->db->query('
 				DELETE a
-				FROM `' . $this->db_table('auth_sessions_table') . '` a
-				LEFT JOIN `' . $this->db_table('sessions_table') . '` b
+				FROM ' . $this->db_table('auth_sessions_table') . ' a
+				LEFT JOIN ' . $this->db_table('sessions_table') . ' b
 				ON  b.id = a.id
 				WHERE b.id IS NULL
 			');
@@ -587,8 +587,8 @@ class Auth_model extends MY_Model {
 		if( config_item('sess_expiration') != 0 )
 		{
 			$this->db->query('
-				DELETE FROM `' . $this->db_table('auth_sessions_table') . '` 
-				WHERE modified_at < CURDATE() - INTERVAL ' . config_item('sess_expiration') . ' SECOND
+				DELETE FROM ' . $this->db_table('auth_sessions_table') . ' 
+				WHERE modified_at < now() - INTERVAL \'' . config_item('sess_expiration') . ' SECOND\'
 			');
 		}
 	}

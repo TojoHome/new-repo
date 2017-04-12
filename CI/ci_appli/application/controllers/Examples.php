@@ -192,9 +192,9 @@ class Examples extends MY_Controller
 	{
 		// Customize this array for your user
 		$user_data = [
-			'username'   => 'skunkbot',
-			'passwd'     => 'PepeLePew7',
-			'email'      => 'skunkbot@example.com',
+			'username'   => 'admin',
+			'passwd'     => 'Admin123',
+			'email'      => 'admin@example.com',
 			'auth_level' => '1', // 9 if you want to login @ examples/index.
 		];
 
@@ -288,9 +288,11 @@ class Examples extends MY_Controller
 	public function login()
 	{
 		// Method should not be directly accessible
-		if( $this->uri->uri_string() == 'examples/login')
-			show_404();
-
+		
+		/*if( $this->uri->uri_string() == 'examples/login')
+			redirect( site_url( LOGIN_PAGE , $redirect_protocol ) );*/
+			//show_404();
+		
 		if( strtolower( $_SERVER['REQUEST_METHOD'] ) == 'post' )
 			$this->require_min_level(1);
 
