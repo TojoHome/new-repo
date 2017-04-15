@@ -1,0 +1,2 @@
+https://community-auth.com/
+http://mbahcoding.com/tutorial/php/codeigniter/codeigniter-ajax-crud-using-bootstrap-modals-datatables-image-upload.html

@@ -1,0 +1,291 @@
+-- Table: public.acl
+
+-- DROP TABLE public.acl;
+
+CREATE TABLE public.acl
+(
+    ai integer NOT NULL DEFAULT nextval('acl_ai_seq'::regclass),
+    action_id bigint NOT NULL,
+    user_id bigint,
+    CONSTRAINT "primary" PRIMARY KEY (ai)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.acl
+    OWNER to postgres;
+
+-- Index: action_id
+
+-- DROP INDEX public.action_id;
+
+CREATE INDEX action_id
+    ON public.acl USING btree
+    (action_id)
+    TABLESPACE pg_default;
+
+-- Index: user_id
+
+-- DROP INDEX public.user_id;
+
+CREATE INDEX user_id
+    ON public.acl USING btree
+    (user_id)
+    TABLESPACE pg_default;
+
+-- Table: public.acl_actions
+
+-- DROP TABLE public.acl_actions;
+
+CREATE TABLE public.acl_actions
+(
+    action_id integer NOT NULL DEFAULT nextval('acl_actions_action_id_seq'::regclass),
+    action_code character varying(100) COLLATE "default".pg_catalog NOT NULL,
+    action_desc character varying(100) COLLATE "default".pg_catalog NOT NULL,
+    category_id bigint NOT NULL,
+    CONSTRAINT primaryacl_actions PRIMARY KEY (action_id)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.acl_actions
+    OWNER to postgres;
+
+-- Index: category_id
+
+-- DROP INDEX public.category_id;
+
+CREATE INDEX category_id
+    ON public.acl_actions USING btree
+    (category_id)
+    TABLESPACE pg_default;
+
+
+-- Table: public.acl_categories
+
+-- DROP TABLE public.acl_categories;
+
+CREATE TABLE public.acl_categories
+(
+    category_id integer NOT NULL DEFAULT nextval('acl_categories_category_id_seq'::regclass),
+    category_code character varying(100) COLLATE "default".pg_catalog NOT NULL,
+    category_desc character varying(100) COLLATE "default".pg_catalog NOT NULL,
+    CONSTRAINT primaryacl_categories PRIMARY KEY (category_id)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.acl_categories
+    OWNER to postgres;
+
+-- Index: category_code
+
+-- DROP INDEX public.category_code;
+
+CREATE UNIQUE INDEX category_code
+    ON public.acl_categories USING btree
+    (category_code COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: category_desc
+
+-- DROP INDEX public.category_desc;
+
+CREATE UNIQUE INDEX category_desc
+    ON public.acl_categories USING btree
+    (category_desc COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Table: public.auth_sessions
+
+-- DROP TABLE public.auth_sessions;
+
+CREATE TABLE public.auth_sessions
+(
+    id character varying(128) COLLATE "default".pg_catalog NOT NULL,
+    user_id bigint NOT NULL,
+    login_time timestamp without time zone,
+    modified_at timestamp without time zone DEFAULT now(),
+    ip_address character varying(45) COLLATE "default".pg_catalog NOT NULL,
+    user_agent character varying(60) COLLATE "default".pg_catalog,
+    CONSTRAINT primaryauth_sessions PRIMARY KEY (id)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.auth_sessions
+    OWNER to postgres;
+
+-- Table: public.ci_sessions
+
+-- DROP TABLE public.ci_sessions;
+
+CREATE TABLE public.ci_sessions
+(
+    id character varying(128) COLLATE "default".pg_catalog NOT NULL,
+    ip_address character varying(45) COLLATE "default".pg_catalog NOT NULL,
+    "timestamp" bigint NOT NULL DEFAULT 0,
+    data bytea NOT NULL,
+    CONSTRAINT primaryci_sessions PRIMARY KEY (id)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.ci_sessions
+    OWNER to postgres;
+
+-- Index: ci_sessions_timestamp
+
+-- DROP INDEX public.ci_sessions_timestamp;
+
+CREATE INDEX ci_sessions_timestamp
+    ON public.ci_sessions USING btree
+    (timestamp)
+    TABLESPACE pg_default;
+
+-- Table: public.denied_access
+
+-- DROP TABLE public.denied_access;
+
+CREATE TABLE public.denied_access
+(
+    ai integer NOT NULL DEFAULT nextval('denied_access_ai_seq'::regclass),
+    ip_address character varying(45) COLLATE "default".pg_catalog NOT NULL,
+    "time" timestamp without time zone,
+    reason_code smallint DEFAULT '0'::smallint,
+    CONSTRAINT primarydenied_access PRIMARY KEY (ai)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.denied_access
+    OWNER to postgres;
+
+-- Table: public.ips_on_hold
+
+-- DROP TABLE public.ips_on_hold;
+
+CREATE TABLE public.ips_on_hold
+(
+    ai integer NOT NULL DEFAULT nextval('ips_on_hold_ai_seq'::regclass),
+    ip_address character varying(45) COLLATE "default".pg_catalog NOT NULL,
+    "time" timestamp without time zone,
+    CONSTRAINT primaryips_on_hold PRIMARY KEY (ai)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.ips_on_hold
+    OWNER to postgres;
+
+-- Table: public.login_errors
+
+-- DROP TABLE public.login_errors;
+
+CREATE TABLE public.login_errors
+(
+    ai integer NOT NULL DEFAULT nextval('login_errors_ai_seq'::regclass),
+    username_or_email character varying(255) COLLATE "default".pg_catalog NOT NULL,
+    ip_address character varying(45) COLLATE "default".pg_catalog NOT NULL,
+    "time" timestamp without time zone,
+    CONSTRAINT primarylogin_errors PRIMARY KEY (ai)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.login_errors
+    OWNER to postgres;
+
+-- Table: public.username_or_email_on_hold
+
+-- DROP TABLE public.username_or_email_on_hold;
+
+CREATE TABLE public.username_or_email_on_hold
+(
+    ai integer NOT NULL DEFAULT nextval('username_or_email_on_hold_ai_seq'::regclass),
+    username_or_email character varying(255) COLLATE "default".pg_catalog NOT NULL,
+    "time" timestamp without time zone,
+    CONSTRAINT primaryusername_or_email_on_hold PRIMARY KEY (ai)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.username_or_email_on_hold
+    OWNER to postgres;
+
+-- Table: public.users
+
+-- DROP TABLE public.users;
+
+CREATE TABLE public.users
+(
+    user_id bigint NOT NULL,
+    username character varying(12) COLLATE "default".pg_catalog,
+    email character varying(255) COLLATE "default".pg_catalog NOT NULL,
+    auth_level smallint NOT NULL,
+    banned character varying(3) COLLATE "default".pg_catalog NOT NULL DEFAULT '0'::character varying,
+    passwd character varying(60) COLLATE "default".pg_catalog NOT NULL,
+    passwd_recovery_code character varying(60) COLLATE "default".pg_catalog,
+    passwd_recovery_date timestamp without time zone,
+    passwd_modified_at timestamp without time zone,
+    last_login timestamp without time zone,
+    created_at timestamp without time zone,
+    modified_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT primaryusers PRIMARY KEY (user_id)
+)
+WITH (
+    OIDS = TRUE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.users
+    OWNER to postgres;
+
+-- Index: email
+
+-- DROP INDEX public.email;
+
+CREATE UNIQUE INDEX email
+    ON public.users USING btree
+    (email COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: username
+
+-- DROP INDEX public.username;
+
+CREATE UNIQUE INDEX username
+    ON public.users USING btree
+    (username COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Trigger: ttt
+
+-- DROP TRIGGER ttt ON public.users;
+
+CREATE TRIGGER ttt
+    BEFORE UPDATE 
+    ON public.users
+    FOR EACH ROW
+    EXECUTE PROCEDURE tf();
+
+ALTER TABLE public.users
+    DISABLE TRIGGER ttt;
